@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-interface LoginPageProps {
+interface SignupPageProps {
   onNavigateHome: () => void;
-  onNavigateSignup: () => void;
+  onNavigateLogin: () => void;
   onNavigateTab: (tab: 'home' | 'feed' | 'my') => void;
 }
 
-export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: LoginPageProps) {
-  const { login } = useAuth();
+export function SignupPage({ onNavigateHome, onNavigateLogin, onNavigateTab }: SignupPageProps) {
+  const { signup } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -18,17 +20,29 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('이메일과 비밀번호를 입력해주세요.');
+    if (!email || !password || !passwordConfirm || !name) {
+      setError('모든 필드를 입력해주세요.');
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('비밀번호는 최소 6자 이상이어야 합니다.');
       return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+      await signup(email, password, name);
+      // 회원가입 성공 시 홈으로 이동
       onNavigateTab('home');
     } catch (err: any) {
-      setError(err.message || '로그인에 실패했습니다.');
+      console.error('Signup error:', err);
+      setError(err.message || '회원가입에 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +70,7 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
                 Home
               </p>
             </button>
-            
+
             <button
               onClick={() => onNavigateTab('feed')}
               className="box-border flex gap-[10px] items-center justify-center p-[10px] h-[70px] w-[90px] text-[#313132]"
@@ -65,7 +79,7 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
                 Feed
               </p>
             </button>
-            
+
             <button
               onClick={() => onNavigateTab('my')}
               className="box-border flex gap-[10px] items-center justify-center p-[10px] h-[70px] w-[90px] text-[#313132]"
@@ -92,9 +106,9 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
         <div className="flex flex-col gap-[40px] items-center w-[597px]">
           {/* Title */}
           <div className="flex flex-col gap-[12px] items-center leading-[1.2] not-italic text-[#181819] w-full text-center">
-            <p className="font-['Pretendard:SemiBold',sans-serif] text-[36px]">로그인</p>
+            <p className="font-['Pretendard:SemiBold',sans-serif] text-[36px]">회원가입</p>
             <p className="font-['Pretendard:Regular',sans-serif] text-[13px]">
-              계정에 로그인하여 서울의 Aura를 기록하세요
+              새 계정을 만들어 서울의 Aura를 기록하세요
             </p>
           </div>
 
@@ -137,6 +151,42 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
                 </div>
               </div>
 
+              {/* Password Confirm Input */}
+              <div className="flex flex-col gap-[8px] items-start w-full">
+                <div className="box-border flex gap-[10px] items-center justify-center px-[24px] py-0">
+                  <p className="font-['Pretendard:Regular',sans-serif] leading-[1.2] not-italic text-[#181819] text-[13px] text-nowrap whitespace-pre">
+                    비밀번호 확인
+                  </p>
+                </div>
+                <div className="bg-[#fffce0] relative rounded-[999px] w-full border border-[#dcdee1]">
+                  <input
+                    type="password"
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                    placeholder="비밀번호를 다시 입력하세요"
+                    className="box-border w-full px-[28px] py-[20px] font-['Pretendard:Regular',sans-serif] leading-[1.2] not-italic text-[#181819] text-[20px] bg-transparent rounded-[999px] outline-none placeholder:text-[#abacaf]"
+                  />
+                </div>
+              </div>
+
+              {/* Name Input */}
+              <div className="flex flex-col gap-[8px] items-start w-full">
+                <div className="box-border flex gap-[10px] items-center justify-center px-[24px] py-0">
+                  <p className="font-['Pretendard:Regular',sans-serif] leading-[1.2] not-italic text-[#181819] text-[13px] text-nowrap whitespace-pre">
+                    이름(닉네임)
+                  </p>
+                </div>
+                <div className="bg-[#fffce0] relative rounded-[999px] w-full border border-[#dcdee1]">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="닉네임을 입력하세요"
+                    className="box-border w-full px-[28px] py-[20px] font-['Pretendard:Regular',sans-serif] leading-[1.2] not-italic text-[#181819] text-[20px] bg-transparent rounded-[999px] outline-none placeholder:text-[#abacaf]"
+                  />
+                </div>
+              </div>
+
               {/* Error Message */}
               {error && (
                 <div className="w-full px-[24px]">
@@ -154,7 +204,7 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
               >
                 <div className="box-border flex gap-[10px] items-center justify-center px-[20px] py-[16px] w-full">
                   <p className="font-['Pretendard:SemiBold',sans-serif] leading-[1.2] not-italic text-[24px] text-nowrap text-white whitespace-pre">
-                    {loading ? '로그인 중...' : '로그인'}
+                    {loading ? '가입 중...' : '회원가입'}
                   </p>
                 </div>
               </button>
@@ -164,12 +214,12 @@ export function LoginPage({ onNavigateHome, onNavigateSignup, onNavigateTab }: L
           {/* Footer Links */}
           <div className="flex flex-col font-['Pretendard:Regular',sans-serif] gap-[12px] items-center leading-[1.2] not-italic text-[13px] text-center">
             <p className="text-[#181819]">
-              <span>계정이 없으신가요? </span>
+              <span>이미 계정이 있으신가요? </span>
               <button
-                onClick={onNavigateSignup}
+                onClick={onNavigateLogin}
                 className="text-[#f24e4e] hover:underline"
               >
-                회원가입
+                로그인
               </button>
             </p>
             <button

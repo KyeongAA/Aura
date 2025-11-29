@@ -34,16 +34,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function checkSession() {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
-      
+
       if (error) {
         console.error('Session error:', error);
         setLoading(false);
         return;
       }
-      
+
       if (session?.access_token && session?.user) {
         setAccessToken(session.access_token);
-        
+
         // 사용자 정보 조회
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-925a5454/users/${session.user.id}`,
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
           }
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
@@ -69,16 +69,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signup(email: string, password: string, nickname: string) {
     try {
       setError(null);
-      
+
       // 클라이언트 유효성 검증
       if (!email || !password || !nickname) {
         throw new Error('모든 필드를 입력해주세요.');
       }
-      
+
       if (password.length < 6) {
         throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
       }
-      
+
       // 서버에 회원가입 요청
       console.log('Sending signup request:', { email, nickname });
       const response = await fetch(
@@ -92,10 +92,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           body: JSON.stringify({ email, password, nickname }),
         }
       );
-      
+
       const data = await response.json();
       console.log('Signup response:', { ok: response.ok, status: response.status, data });
-      
+
       if (!response.ok) {
         if (data.error === 'EMAIL_DUPLICATE') {
           throw new Error('이미 사용 중인 이메일입니다.');
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || '회원가입에 실패했습니다.');
         throw new Error(errorMsg);
       }
-      
+
       // 회원가입 성공 후 자동 로그인
       await login(email, password);
     } catch (error: any) {
@@ -116,20 +116,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(email: string, password: string) {
     try {
       setError(null);
-      
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) {
         console.error('Login error:', error);
         throw new Error('이메일 또는 비밀번호가 올바르지 않습니다.');
       }
-      
+
       if (data.session?.access_token && data.user) {
         setAccessToken(data.session.access_token);
-        
+
         // 사용자 정보 조회
         const response = await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-925a5454/users/${data.user.id}`,
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             },
           }
         );
-        
+
         if (response.ok) {
           const userData = await response.json();
           setUser(userData.user);

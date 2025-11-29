@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MapView } from '../components/MapView';
-import { FeedList } from '../components/FeedList';
-import { AuraCreateModal } from '../components/AuraCreateModal';
+import { MapView } from '../src/components/MapView';
+import { FeedList } from '../src/components/FeedList';
+import { AuraCreateModal } from '../src/components/AuraCreateModal';
 import { useAuth } from '../contexts/AuthContext';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import type { AuraRecord } from '../types';
@@ -70,11 +70,11 @@ export function MainLayout({ mode, showFilters = false, title, subtitle, onLogin
               {title}
             </p>
           )}
-          
+
           <div className="relative h-[741px] w-full">
             <MapView records={records} mode={mode} />
           </div>
-          
+
           {/* Floating + Button */}
           <button
             onClick={handleCreateClick}
@@ -82,7 +82,7 @@ export function MainLayout({ mode, showFilters = false, title, subtitle, onLogin
             aria-label="새로운 Aura 작성"
           >
             <svg className="block size-[48px]" fill="none" preserveAspectRatio="none" viewBox="0 0 48 48">
-              <path d="M24 13V35M35 24H13" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M24 13V35M35 24H13" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
@@ -94,9 +94,9 @@ export function MainLayout({ mode, showFilters = false, title, subtitle, onLogin
               <div className="w-12 h-12 border-4 border-[#ebedf0] border-t-[#313132] rounded-full animate-spin" />
             </div>
           ) : (
-            <FeedList 
-              records={records} 
-              showFilters={showFilters} 
+            <FeedList
+              records={records}
+              showFilters={showFilters}
               title={showFilters ? title : undefined}
               subtitle={showFilters ? subtitle : undefined}
             />
