@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MapView } from '../src/components/MapView';
-import { FeedList } from '../src/components/FeedList';
-import { AuraCreateModal } from '../src/components/AuraCreateModal';
+import { MapView } from '../components/MapView';
+import { FeedList } from '../components/FeedList';
+import { AuraCreateModal } from '../components/AuraCreateModal';
 import { useAuth } from '../contexts/AuthContext';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import type { AuraRecord } from '../types';
