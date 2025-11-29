@@ -1,7 +1,7 @@
 import React from "react";
 import { getColorFromDotType } from "../utils/constants";
 import type { AuraRecord } from "../types";
-import mapPlaceholder from "figma:asset/6ecdb27b3a087bc3dbac10a7877ec1657e4342ab.png";
+import mapPlaceholder from "../assets/map-placeholder.png";
 
 interface MapViewProps {
   records: AuraRecord[];
